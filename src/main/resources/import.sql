@@ -1,10 +1,9 @@
-INSERT INTO clients (name, lastname) VALUES 
-(Dayana, Granja),
-(Andres, Guzman),
-(Paulo, Devries),
-(Ximena, Rodriguez),
-(Daniel, Belalcasar),
-(Leonardo, Martinez),
-(Santiago, Guerrero),
-(Jose, Munares),
-(Samuel, Gutierrez);
+INSERT INTO clients (name, lastname) VALUES ('Dayana', 'Granja');
+INSERT INTO clients (name, lastname) VALUES ('Andres', 'Guzman');
+INSERT INTO clients (name, lastname) VALUES ('Paulo', 'Devries');
+INSERT INTO clients (name, lastname) VALUES ('Ximena', 'Rodriguez');
+INSERT INTO clients (name, lastname) VALUES ('Daniel', 'Belalcasar');
+INSERT INTO clients (name, lastname) VALUES ('Leonardo', 'Martinez');
+INSERT INTO clients (name, lastname) VALUES ('Santiago', 'Guerrero');
+INSERT INTO clients (name, lastname) VALUES ('Jose', 'Munares');
+INSERT INTO clients (name, lastname) VALUES ('Samuel', 'Gutierrez');

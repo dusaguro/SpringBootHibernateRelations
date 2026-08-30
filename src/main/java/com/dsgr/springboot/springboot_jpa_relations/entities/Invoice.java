@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -20,6 +21,7 @@ public class Invoice {
     private Long total;
 
     @ManyToOne
+    // @JoinColumn(name = "id_client_temp")
     private Client client;
 
     public Invoice(String description, Long total) {
@@ -51,9 +53,18 @@ public class Invoice {
         this.total = total;
     }
 
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
     @Override
     public String toString() {
         return "{id=" + id + ", description=" + description + ", total=" + total + ", client=" + client + "}";
+
     }
 
 }
