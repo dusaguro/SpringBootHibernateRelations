@@ -88,9 +88,7 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 
 			client.setAddresses(Arrays.asList(address1, address2));
 
-			clientRepository.save(client);
-
-			System.out.println(client);
+			System.out.println(clientRepository.save(client));
 
 		}, () -> {
 			System.out.println("Id de cliente no existe");
