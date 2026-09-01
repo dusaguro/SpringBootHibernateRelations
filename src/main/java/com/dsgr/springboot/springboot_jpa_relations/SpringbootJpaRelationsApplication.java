@@ -34,7 +34,9 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 		// manyToOne();
 		// manyToOneFindByIdClient();
 		// oneToMany();
-		oneToManyFindById();
+		// oneToManyFindById();
+		// removeAddress();
+		removeAddressFindById();
 
 	}
 
@@ -73,9 +75,7 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 		client.getAddresses().add(address1);
 		client.getAddresses().add(address2);
 
-		clientRepository.save(client);
-
-		System.out.println(client);
+		System.out.println(clientRepository.save(client));
 
 	}
 
@@ -89,6 +89,53 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 			client.setAddresses(Arrays.asList(address1, address2));
 
 			System.out.println(clientRepository.save(client));
+
+		}, () -> {
+			System.out.println("Id de cliente no existe");
+		});
+
+	}
+
+	@Transactional
+	private void removeAddress() {
+
+		Client client = new Client("Frank", "Moras");
+
+		Address address1 = new Address("El Verjel", 1234);
+		Address address2 = new Address("Vasco de Gamma", 789);
+
+		client.getAddresses().add(address1);
+		client.getAddresses().add(address2);
+
+		System.out.println(clientRepository.save(client));
+
+		Optional<Client> optionalClient = clientRepository.findById(10L);
+		optionalClient.ifPresentOrElse(c -> {
+			c.getAddresses().remove(address1);
+			System.out.println(clientRepository.save(c));
+		}, () -> {
+			System.out.println("Id de cliente no existe");
+		});
+
+	}
+
+	@Transactional
+	private void removeAddressFindById() {
+
+		clientRepository.findById(4L).ifPresentOrElse(client -> {
+			Address address1 = new Address("Tamasagra", 17);
+			Address address2 = new Address("Bachue", 14);
+			
+			client.setAddresses(Arrays.asList(address1, address2));
+			System.out.println(clientRepository.save(client));
+
+			Optional<Client> optionalClient = clientRepository.findOne(4L);
+			optionalClient.ifPresentOrElse(c -> {
+				c.getAddresses().remove(c.getAddresses().get(0));
+				System.out.println(clientRepository.save(c));
+			}, () -> {
+				System.out.println("Id de cliente no existe");
+			});
 
 		}, () -> {
 			System.out.println("Id de cliente no existe");
