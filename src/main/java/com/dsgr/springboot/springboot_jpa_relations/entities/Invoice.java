@@ -24,6 +24,9 @@ public class Invoice {
     @JoinColumn(name = "client_id")
     private Client client;
 
+    public Invoice() {
+    }
+
     public Invoice(String description, Long total) {
         this.description = description;
         this.total = total;

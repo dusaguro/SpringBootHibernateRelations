@@ -1,7 +1,8 @@
 package com.dsgr.springboot.springboot_jpa_relations;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -36,7 +37,9 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 		// oneToMany();
 		// oneToManyFindById();
 		// removeAddress();
-		removeAddressFindById();
+		// removeAddressFindById();
+		// oneToManyInvoiceBidireccional();
+		oneToManyInvoiceBidireccionalFindById();
 
 	}
 
@@ -86,7 +89,10 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 			Address address1 = new Address("Tamasagra", 17);
 			Address address2 = new Address("Bachue", 14);
 
-			client.setAddresses(Arrays.asList(address1, address2));
+			Set<Address> addresses = new HashSet<>();
+			addresses.add(address1);
+			addresses.add(address2);
+			client.setAddresses(addresses);
 
 			System.out.println(clientRepository.save(client));
 
@@ -125,13 +131,16 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 		clientRepository.findById(4L).ifPresentOrElse(client -> {
 			Address address1 = new Address("Tamasagra", 17);
 			Address address2 = new Address("Bachue", 14);
-			
-			client.setAddresses(Arrays.asList(address1, address2));
+
+			Set<Address> addresses = new HashSet<>();
+			addresses.add(address1);
+			addresses.add(address2);
+			client.setAddresses(addresses);
 			System.out.println(clientRepository.save(client));
 
-			Optional<Client> optionalClient = clientRepository.findOne(4L);
+			Optional<Client> optionalClient = clientRepository.findOneWithAddresses(4L);
 			optionalClient.ifPresentOrElse(c -> {
-				c.getAddresses().remove(c.getAddresses().get(0));
+				c.getAddresses().remove(address1);
 				System.out.println(clientRepository.save(c));
 			}, () -> {
 				System.out.println("Id de cliente no existe");
@@ -142,5 +151,52 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 		});
 
 	}
+
+	@Transactional
+	private void oneToManyInvoiceBidireccional() {
+
+		Client client = new Client("Frank", "Moras");
+		Invoice invoice1 = new Invoice("Compras oficina", 2000L);
+		Invoice invoice2 = new Invoice("Compras casa", 8000L);
+
+		client.addInvoice(invoice1).addInvoice(invoice2);
+
+		System.out.println(clientRepository.save(client));
+
+	}
+
+	@Transactional
+	private void oneToManyInvoiceBidireccionalFindById() {
+		Optional<Client> optionalClient = clientRepository.findOne(1L);
+		optionalClient.ifPresentOrElse(client -> {
+			Invoice invoice1 = new Invoice("Compras oficina", 2000L);
+			Invoice invoice2 = new Invoice("Compras casa", 8000L);
+
+			client.addInvoice(invoice1).addInvoice(invoice2);
+
+			System.out.println(clientRepository.save(client));
+
+		}, () -> {
+			System.out.println("Id de cliente no existe");
+		});
+
+	}
+
+	/* @Transactional
+	private void oneToManyInvoiceBidireccionalFindById() {
+		Optional<Client> optionalClient = clientRepository.findOneWithInvoices(1L);
+		optionalClient.ifPresentOrElse(client -> {
+			Invoice invoice1 = new Invoice("Compras oficina", 2000L);
+			Invoice invoice2 = new Invoice("Compras casa", 8000L);
+
+			client.addInvoice(invoice1).addInvoice(invoice2);
+
+			System.out.println(clientRepository.save(client));
+
+		}, () -> {
+			System.out.println("Id de cliente no existe");
+		});
+
+	} */
 
 }
