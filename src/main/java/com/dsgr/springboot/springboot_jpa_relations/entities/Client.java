@@ -5,12 +5,14 @@ import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -34,6 +36,10 @@ public class Client {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "client")
     private Set<Invoice> invoices;
+
+    // @JoinColumn (name = "id_cliente_detalles")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "client")
+    private ClientDetails clientDetails;
 
     public Client() {
         this.addresses = new HashSet<>();
@@ -86,16 +92,42 @@ public class Client {
         this.invoices = invoices;
     }
 
+    public ClientDetails getClientDetails() {
+        return clientDetails;
+    }
+
+    public void setClientDetails(ClientDetails clientDetails) {
+        this.clientDetails = clientDetails;
+    }
+
     public Client addInvoice(Invoice invoice) {
         this.invoices.add(invoice);
         invoice.setClient(this);
         return this;
     }
 
+    public Client removeInvoice(Invoice invoice) {
+        invoice.setClient(null);
+        this.getInvoices().remove(invoice);
+        return this;
+    }
+
+    public Client addClientDetails(ClientDetails clientDetails) {
+        this.clientDetails = clientDetails;
+        clientDetails.setClient(this);
+        return this;
+    }
+
+    public Client removeClientDetails(ClientDetails clientDetails) {
+        clientDetails.setClient(null);
+        this.clientDetails = null;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "{id=" + id + ", name=" + name + ", lastname=" + lastname + ", addresses=" + addresses + ", invoices="
-                + invoices + "}";
+                + invoices + ", details=" + clientDetails + "}";
     }
 
 }

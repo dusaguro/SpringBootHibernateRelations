@@ -5,31 +5,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "invoices")
-public class Invoice {
+@Table(name = "client_details")
+public class ClientDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String description;
+    private boolean premium;
 
-    private Long total;
+    private Integer points;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id")
+    @OneToOne
+    @JoinColumn(name = "id_cliente_detalles")
     private Client client;
 
-    public Invoice() {
+    public ClientDetails() {
     }
 
-    public Invoice(String description, Long total) {
-        this.description = description;
-        this.total = total;
+    public ClientDetails(boolean premium, Integer points) {
+        this.premium = premium;
+        this.points = points;
     }
 
     public Long getId() {
@@ -40,20 +40,20 @@ public class Invoice {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean isPremium() {
+        return premium;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPremium(boolean premium) {
+        this.premium = premium;
     }
 
-    public Long getTotal() {
-        return total;
+    public Integer getPoints() {
+        return points;
     }
 
-    public void setTotal(Long total) {
-        this.total = total;
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 
     public Client getClient() {
@@ -65,17 +65,12 @@ public class Invoice {
     }
 
     @Override
-    public String toString() {
-        return "{id=" + id + ", description=" + description + ", total=" + total + "}";
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + ((total == null) ? 0 : total.hashCode());
+        result = prime * result + (premium ? 1231 : 1237);
+        result = prime * result + ((points == null) ? 0 : points.hashCode());
         return result;
     }
 
@@ -87,27 +82,25 @@ public class Invoice {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Invoice other = (Invoice) obj;
+        ClientDetails other = (ClientDetails) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
             return false;
-        if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
+        if (premium != other.premium)
             return false;
-        if (total == null) {
-            if (other.total != null)
+        if (points == null) {
+            if (other.points != null)
                 return false;
-        } else if (!total.equals(other.total))
+        } else if (!points.equals(other.points))
             return false;
         return true;
     }
 
-    
-
-    
+    @Override
+    public String toString() {
+        return "{id=" + id + ", premium=" + premium + ", points=" + points + "}";
+    }
 
 }
