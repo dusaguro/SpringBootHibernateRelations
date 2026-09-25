@@ -13,10 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dsgr.springboot.springboot_jpa_relations.entities.Address;
 import com.dsgr.springboot.springboot_jpa_relations.entities.Client;
 import com.dsgr.springboot.springboot_jpa_relations.entities.ClientDetails;
+import com.dsgr.springboot.springboot_jpa_relations.entities.Course;
 import com.dsgr.springboot.springboot_jpa_relations.entities.Invoice;
+import com.dsgr.springboot.springboot_jpa_relations.entities.Student;
 import com.dsgr.springboot.springboot_jpa_relations.repositories.ClientDetailsRepository;
 import com.dsgr.springboot.springboot_jpa_relations.repositories.ClientRepository;
+import com.dsgr.springboot.springboot_jpa_relations.repositories.CourseRepository;
 import com.dsgr.springboot.springboot_jpa_relations.repositories.InvoiceRepository;
+import com.dsgr.springboot.springboot_jpa_relations.repositories.StudentRepository;
 
 @SpringBootApplication
 public class SpringbootJpaRelationsApplication implements CommandLineRunner {
@@ -29,6 +33,12 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 
 	@Autowired
 	private ClientDetailsRepository clientDetailsRepository;
+
+	@Autowired
+	private StudentRepository studentRepository;
+
+	@Autowired
+	private CourseRepository courseRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootJpaRelationsApplication.class, args);
@@ -49,7 +59,181 @@ public class SpringbootJpaRelationsApplication implements CommandLineRunner {
 		// oneToOne();
 		// oneToOneFindById();
 		// oneToOneBidirectional();
-		oneToOneBidirectionalFindById();
+		// oneToOneBidirectionalFindById();
+		// manyToMany();
+		// manyToManyFindById();
+		// manyToManyRemoveFindById();
+		// manyToManyRemove();
+		// manyToManyBidirectional();
+		manyToManyRemoveBidirectional();
+	}
+
+	@Transactional
+	private void manyToManyRemoveBidirectional() {
+		Student student1 = new Student("Frank", "Moras");
+		Student student2 = new Student("Jhon", "Doe");
+		Student student3 = new Student("Jane", "Doe");
+
+		Course course1 = new Course("Java", "Instructor 1");
+		Course course2 = new Course("Python", "Instructor 2");
+		Course course3 = new Course("JavaScript", "Instructor 3");
+
+		student1.addCourse(course1).addCourse(course2);
+		student2.addCourse(course1);
+		student3.addCourse(course2).addCourse(course3);
+
+		studentRepository.saveAll(Set.of(student1, student2, student3));
+
+		System.out.println(student1);
+		System.out.println(student2);
+		System.out.println(student3);
+
+		Optional<Student> studentDB = studentRepository.findOne(10L);
+		studentDB.ifPresentOrElse(student -> {
+			Optional<Course> courseDB = courseRepository.findOne(4L);
+			courseDB.ifPresentOrElse(course -> {
+				student.removeCourse(course);
+				System.out.println(studentRepository.save(student));
+			}, () -> {
+				System.out.println("No existe el curso con ese id");
+			});
+		}, () -> {
+			System.out.println("No existe el estudiante con ese id");
+		});
+	}
+
+	@Transactional
+	private void manyToManyBidirectional() {
+		Student student1 = new Student("Frank", "Moras");
+		Student student2 = new Student("Jhon", "Doe");
+		Student student3 = new Student("Jane", "Doe");
+
+		Course course1 = new Course("Java", "Instructor 1");
+		Course course2 = new Course("Python", "Instructor 2");
+		Course course3 = new Course("JavaScript", "Instructor 3");
+
+		student1.addCourse(course1).addCourse(course2);
+		student2.addCourse(course1);
+		student3.addCourse(course2).addCourse(course3);
+
+		studentRepository.saveAll(Set.of(student1, student2, student3));
+
+		System.out.println(student1);
+		System.out.println(student2);
+		System.out.println(student3);
+
+	}
+
+	@Transactional
+	private void manyToManyRemove() {
+		Student student1 = new Student("Frank", "Moras");
+		Student student2 = new Student("Jhon", "Doe");
+		Student student3 = new Student("Jane", "Doe");
+
+		Course course1 = new Course("Java", "Instructor 1");
+		Course course2 = new Course("Python", "Instructor 2");
+		Course course3 = new Course("JavaScript", "Instructor 3");
+
+		student1.setCourses(Set.of(course1, course2));
+		student2.setCourses(Set.of(course1));
+		student3.setCourses(Set.of(course2, course3));
+
+		studentRepository.saveAll(Set.of(student1, student2, student3));
+
+		System.out.println(student1);
+		System.out.println(student2);
+		System.out.println(student3);
+
+		Optional<Student> studentDB = studentRepository.findOne(10L);
+		studentDB.ifPresentOrElse(student -> {
+			Optional<Course> courseDB = courseRepository.findById(4L);
+			courseDB.ifPresentOrElse(course -> {
+				student.getCourses().remove(course);
+				System.out.println(studentRepository.save(student));
+			}, () -> {
+				System.out.println("No existe el curso con ese id");
+			});
+		}, () -> {
+			System.out.println("No existe el estudiante con ese id");
+		});
+	}
+
+	@Transactional
+	private void manyToManyRemoveFindById() {
+		Student student1 = studentRepository.findById(1L).orElseThrow();
+		Student student2 = studentRepository.findById(2L).orElseThrow();
+		Student student3 = studentRepository.findById(3L).orElseThrow();
+
+		Course course1 = courseRepository.findById(1L).orElseThrow();
+		Course course2 = courseRepository.findById(2L).orElseThrow();
+		Course course3 = courseRepository.findById(3L).orElseThrow();
+
+		student1.setCourses(Set.of(course1, course2));
+		student2.setCourses(Set.of(course1));
+		student3.setCourses(Set.of(course2, course3));
+
+		studentRepository.saveAll(Set.of(student1, student2, student3));
+
+		System.out.println(student1);
+		System.out.println(student2);
+		System.out.println(student3);
+
+		Optional<Student> studentDB = studentRepository.findOne(1L);
+		studentDB.ifPresentOrElse(student -> {
+			Optional<Course> courseDB = courseRepository.findById(1L);
+			courseDB.ifPresentOrElse(course -> {
+				student.getCourses().remove(course);
+				System.out.println(studentRepository.save(student));
+			}, () -> {
+				System.out.println("No existe el curso con ese id");
+			});
+		}, () -> {
+			System.out.println("No existe el estudiante con ese id");
+		});
+	}
+
+	@Transactional
+	private void manyToManyFindById() {
+		Student student1 = studentRepository.findById(1L).orElseThrow();
+		Student student2 = studentRepository.findById(2L).orElseThrow();
+		Student student3 = studentRepository.findById(3L).orElseThrow();
+
+		Course course1 = courseRepository.findById(1L).orElseThrow();
+		Course course2 = courseRepository.findById(2L).orElseThrow();
+		Course course3 = courseRepository.findById(3L).orElseThrow();
+
+		student1.setCourses(Set.of(course1, course2));
+		student2.setCourses(Set.of(course1));
+		student3.setCourses(Set.of(course2, course3));
+
+		studentRepository.saveAll(Set.of(student1, student2, student3));
+
+		System.out.println(student1);
+		System.out.println(student2);
+		System.out.println(student3);
+
+	}
+
+	@Transactional
+	private void manyToMany() {
+		Student student1 = new Student("Frank", "Moras");
+		Student student2 = new Student("Jhon", "Doe");
+		Student student3 = new Student("Jane", "Doe");
+
+		Course course1 = new Course("Java", "Instructor 1");
+		Course course2 = new Course("Python", "Instructor 2");
+		Course course3 = new Course("JavaScript", "Instructor 3");
+
+		student1.setCourses(Set.of(course1, course2));
+		student2.setCourses(Set.of(course1));
+		student3.setCourses(Set.of(course2, course3));
+
+		studentRepository.saveAll(Set.of(student1, student2, student3));
+
+		System.out.println(student1);
+		System.out.println(student2);
+		System.out.println(student3);
+
 	}
 
 	@Transactional
